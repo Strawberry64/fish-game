@@ -2,8 +2,11 @@ import pygame
 import random
 
 pygame.init()
+
+
 flags =  [pygame.DOUBLEBUF | pygame.NOFRAME | pygame.SCALED]
 screen = pygame.display.set_mode((640,480), flags[0])
+pygame.display.set_icon(pygame.image.load("assets/images/icon.png"))
 clock = pygame.time.Clock()
 
 print(flags)
