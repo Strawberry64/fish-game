@@ -2,9 +2,12 @@ import pygame
 import random
 
 pygame.init()
-flags =  pygame.DOUBLEBUF | pygame.NOFRAME
-screen = pygame.display.set_mode((640,480), flags)
+flags =  [pygame.DOUBLEBUF | pygame.NOFRAME | pygame.SCALED]
+screen = pygame.display.set_mode((640,480), flags[0])
 clock = pygame.time.Clock()
+
+print(flags)
+
 
 safe_x_one = 0
 safe_y_one = 60
@@ -50,7 +53,7 @@ class Sprite:
 
 class Bubble(Sprite):
     def __init__(self,pos):
-        self.image = pygame.image.load("aero_fish.png")
+        self.image = pygame.image.load("assets/images/aero_fish.png")
         self.x = pos[0]
         self.y = pos[1]
         self.width = self.image.get_width()
@@ -80,20 +83,19 @@ def check_collision_click(mousePos,mouseClick,target):
     if mousePos[0] > target[0] and mousePos[0] < target[2]:
         if mousePos[1] > target[1] and mousePos[1] < target[3]:
             if mouseClick[0] == True:
-                print("Clicked!")
                 return True
     return False
 
-background = pygame.image.load("city.png")
-start = Button([220,275],["newstart.png","newstarthover.png"])
-back = Button([220,275],["back.png","backhover.png"])
-quitButton = Button([220,375],["quit.png","quithover.png"])
+background = pygame.image.load("assets/images/city.png")
+start = Button([220,275],["assets/images/newstart.png","assets/images/newstarthover.png"])
+back = Button([220,275],["assets/images/back.png","assets/images/backhover.png"])
+quitButton = Button([220,375],["assets/images/quit.png","assets/images/quithover.png"])
+fullscreenSprite = Button([555,15],["assets/images/fullscreen.png","assets/images/fullscreenhover.png"])
 
-scoreImage = Sprite([20,20], "score.png")
 
-gameOverSprite = Sprite([195,60], "gameOver.png")
+scoreImage = Sprite([20,20], "assets/images/score.png")
 
-print(start.getFullPos())
+gameOverSprite = Sprite([195,60], "assets/images/gameOver.png")
 
 fishes = []
 
@@ -102,7 +104,7 @@ fishes = []
 
 
 init_tick = 0
-time = 500
+time = 800
 score = 0
 startGame = False
 game = False
@@ -144,6 +146,14 @@ while play:
         else:
             quitButton.setImage(0)
 
+        if(check_collision(mouse[0],fullscreenSprite.getFullPos())):
+            fullscreenSprite.setImage(1)
+            if(check_collision_click(mouse[0],mouse[1],fullscreenSprite.getFullPos())):
+                pygame.display.toggle_fullscreen()
+        else:
+            fullscreenSprite.setImage(0)
+
+
     # Do logical updates here.
     # ... 
     screen.blit(background,[0,0])
@@ -151,8 +161,7 @@ while play:
         if tick - init_tick > time:
             init_tick = tick
             fishes.append(Bubble(random_location(safe_x_one,safe_y_one,safe_x_two,safe_y_two)))
-            print("New Orb!")
-        if(len(fishes) < 10):
+        if(len(fishes) < 11):
             if(lastClick == False):
                 for i in range(len(fishes) - 1 , -1, -1):
                     if(check_collision_click(mouse[0],mouse[1],fishes[i].getFullPos())):
@@ -172,7 +181,6 @@ while play:
         if(check_collision(mouse[0],back.getFullPos())):
             back.setImage(1)
             if(check_collision_click(mouse[0],mouse[1],back.getFullPos())):
-                print("Back!")
                 gameover = False
         else:
             back.setImage(0)
@@ -191,6 +199,7 @@ while play:
     if(not(game) and (not(gameover))):
         screen.blit(start.getImage(), start.getPos())
         screen.blit(quitButton.getImage(), quitButton.getPos())
+        screen.blit(fullscreenSprite.getImage(), fullscreenSprite.getPos())
     
     if(mouse[1][0] == 1):
         lastClick = True
