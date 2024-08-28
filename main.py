@@ -8,6 +8,8 @@ flags =  [pygame.DOUBLEBUF | pygame.NOFRAME | pygame.SCALED]
 screen = pygame.display.set_mode((640,480), flags[0])
 pygame.display.set_icon(pygame.image.load("assets/images/icon.png"))
 clock = pygame.time.Clock()
+font = pygame.font.Font("assets/fonts/segoeuigis.ttf")
+
 
 print(flags)
 
@@ -94,7 +96,7 @@ start = Button([220,275],["assets/images/newstart.png","assets/images/newstartho
 back = Button([220,275],["assets/images/back.png","assets/images/backhover.png"])
 quitButton = Button([220,375],["assets/images/quit.png","assets/images/quithover.png"])
 fullscreenSprite = Button([555,15],["assets/images/fullscreen.png","assets/images/fullscreenhover.png"])
-
+competitiveSprite = Button([555,105],["assets/images/compOff.png","assets/images/compOn.png"])
 
 scoreImage = Sprite([20,20], "assets/images/score.png")
 
@@ -111,6 +113,9 @@ time = 600
 score = 0
 startGame = False
 game = False
+comp = False
+compTimeStart = 0
+compTimeEnd = 0
 lastClick = False
 
 score = 0
@@ -155,12 +160,19 @@ while play:
                 pygame.display.toggle_fullscreen()
         else:
             fullscreenSprite.setImage(0)
-
+        #competitive mode button
+        if(check_collision_click(mouse[0],mouse[1],competitiveSprite.getFullPos())):
+            if(comp == False):
+                competitiveSprite.setImage(1)
+                comp = True
+            else:
+                competitiveSprite.setImage(0)
+                comp = False
 
     # Do logical updates here.
     # ... 
     screen.blit(background,[0,0])
-    if(game == True):
+    if(game == True and comp == False):
         if tick - init_tick > time:
             init_tick = tick
             fishes.append(Bubble(random_location(safe_x_one,safe_y_one,safe_x_two,safe_y_two)))
@@ -176,6 +188,16 @@ while play:
                 screen.blit(fish.getImage(),fish.getPos())
             screen.blit(scoreImage.getImage(), scoreImage.getPos())
         else:
+            game = False
+            gameover = True
+    if(game == True and comp == True):
+        screen.blit(fishes[0].getImage(),fishes[0].getPos())
+        if(check_collision_click(mouse[0],mouse[1],fishes[0].getFullPos())):
+            fishes.pop(0)
+        screen.blit(scoreImage.getImage(), scoreImage.getPos())
+        if(len(fishes) == 0):
+            compTimeEnd = tick
+            print("Final Time in ms: " + str((compTimeEnd - compTimeStart)))
             game = False
             gameover = True
 
@@ -196,14 +218,18 @@ while play:
     if(startGame):
         fishes = []
         time = DEFAULT_TIME
-
         game = True
         startGame = False
+        if(comp):
+            for i in range(10):
+                fishes.append(Bubble(random_location(safe_x_one,safe_y_one,safe_x_two,safe_y_two)))
+            compTimeStart = tick
     
     if(not(game) and (not(gameover))):
         screen.blit(start.getImage(), start.getPos())
         screen.blit(quitButton.getImage(), quitButton.getPos())
         screen.blit(fullscreenSprite.getImage(), fullscreenSprite.getPos())
+        screen.blit(competitiveSprite.getImage(), competitiveSprite.getPos())
     
     if(mouse[1][0] == 1):
         lastClick = True
