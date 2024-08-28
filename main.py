@@ -105,9 +105,9 @@ fishes = []
 
 #class Fish:
 
-
+DEFAULT_TIME = 600
 init_tick = 0
-time = 800
+time = 600
 score = 0
 startGame = False
 game = False
@@ -169,6 +169,8 @@ while play:
                 for i in range(len(fishes) - 1 , -1, -1):
                     if(check_collision_click(mouse[0],mouse[1],fishes[i].getFullPos())):
                         fishes.pop(i)
+                        time -= 1
+                        score += 1
                         i = -1
             for fish in fishes:
                 screen.blit(fish.getImage(),fish.getPos())
@@ -178,7 +180,6 @@ while play:
             gameover = True
 
     if(gameover):
-        
         screen.blit(gameOverSprite.getImage(), gameOverSprite.getPos())
         screen.blit(back.getImage(), back.getPos())
         if(check_collision(mouse[0],back.getFullPos())):
@@ -187,8 +188,6 @@ while play:
                 gameover = False
         else:
             back.setImage(0)
-
-        
     
     #screen.fill("grey")  # Fill the display with a solid color
     
@@ -196,6 +195,8 @@ while play:
     
     if(startGame):
         fishes = []
+        time = DEFAULT_TIME
+
         game = True
         startGame = False
     
