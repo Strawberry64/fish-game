@@ -8,7 +8,8 @@ flags =  [pygame.DOUBLEBUF | pygame.NOFRAME | pygame.SCALED]
 screen = pygame.display.set_mode((640,480), flags[0])
 pygame.display.set_icon(pygame.image.load("assets/images/icon.png"))
 clock = pygame.time.Clock()
-font = pygame.font.Font("assets/fonts/segoeuigis.ttf")
+pygame.font.init()
+font = pygame.font.Font("assets/fonts/segoeuigis.ttf", 36)
 
 
 print(flags)
@@ -187,6 +188,7 @@ while play:
             for fish in fishes:
                 screen.blit(fish.getImage(),fish.getPos())
             screen.blit(scoreImage.getImage(), scoreImage.getPos())
+            screen.blit(font.render(str(score),False, (0,43,162)), [240,18])
         else:
             game = False
             gameover = True
@@ -195,6 +197,7 @@ while play:
         if(check_collision_click(mouse[0],mouse[1],fishes[0].getFullPos())):
             fishes.pop(0)
         screen.blit(scoreImage.getImage(), scoreImage.getPos())
+        screen.blit(font.render(str((tick - compTimeStart)/1000),False, (174,0,0)), [240,18])
         if(len(fishes) == 0):
             compTimeEnd = tick
             print("Final Time in ms: " + str((compTimeEnd - compTimeStart)))
@@ -204,6 +207,10 @@ while play:
     if(gameover):
         screen.blit(gameOverSprite.getImage(), gameOverSprite.getPos())
         screen.blit(back.getImage(), back.getPos())
+        if(comp == False):
+            screen.blit(font.render(("Score: " + str(score)),False, (0,43,162)), [20,18])
+        else:
+            screen.blit(font.render(("Time in Seconds: " + str((compTimeEnd - compTimeStart)/1000)),False, (174,0,0)), [20,18])
         if(check_collision(mouse[0],back.getFullPos())):
             back.setImage(1)
             if(check_collision_click(mouse[0],mouse[1],back.getFullPos())):
@@ -235,4 +242,4 @@ while play:
         lastClick = True
     
     pygame.display.flip()  # Refresh on-screen display
-    clock.tick(60)         # wait until next frame (at 60 FPS)
+    clock.tick(360)         # wait until next frame (at 60 FPS)
