@@ -1,8 +1,11 @@
 import pygame
 import random
+from Sprite import Sprite
+from SmallFish import SmallFish
+from BigFish import BigFish
+from Button import Button
 
 pygame.init()
-
 
 flags =  [pygame.DOUBLEBUF | pygame.NOFRAME | pygame.SCALED]
 screen = pygame.display.set_mode((640,480), flags[0])
@@ -11,88 +14,7 @@ clock = pygame.time.Clock()
 pygame.font.init()
 font = pygame.font.Font("assets/fonts/segoeuigis.ttf", 36)
 
-class Sprite:
-    def __init__(self, pos, image):
-        self.image = pygame.image.load(image)
-        self.x = pos[0]
-        self.y = pos[1]
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-    
-    def getImage(self):
-        return self.image
-    def setImage(self, image):
-        self.image = pygame.image.load(image)
-    def getX(self):
-        return self.x
-    def getY(self):
-        return self.y
-    def getEndX(self):
-        return self.x + self.width        
-    def getEndY(self):
-        return self.y + self.height
-    def getWidth(self):
-        return self.width        
-    def getHeight(self):
-        return self.height
-    def getPos(self):
-        return [self.x,self.y]    
-    def getFullPos(self):
-        return [self.x,self.y,self.x + self.width,self.y + self.height]
-    def getEndPos(self):
-        return [self.x + self.width, self.y + self.height]
-    
-    def checkHover(self,mousePos):
-        if mousePos[0] > self.getX() and mousePos[0] < self.getEndX():
-            if mousePos[1] > self.getY() and mousePos[1] < self.getEndY():
-                return True
-        return False
 
-    def checkHoverClick(self,mousePos,mouseClick):
-        if(check_hover(mousePos)):
-            if mouseClick[0] == True:
-                return True
-        return False
-
-class SmallFish(Sprite):
-    safe_x_one = 0
-    safe_y_one = 60
-    safe_x_two = 565
-    safe_y_two = 405
-    def __init__(self):
-        self.image = pygame.image.load("assets/images/aero fish new.png")
-        self.x = random.randint(SmallFish.safe_x_one,SmallFish.safe_x_two)
-        self.y = random.randint(SmallFish.safe_y_one,SmallFish.safe_y_two)
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-
-
-class BigFish(Sprite):
-    safe_x_one = 0
-    safe_y_one = 60
-    safe_x_two = 540
-    safe_y_two = 380
-    def __init__(self):
-        self.image = pygame.image.load("assets/images/aero fish big.png")
-        self.x = random.randint(BigFish.safe_x_one,BigFish.safe_x_two)
-        self.y = random.randint(BigFish.safe_y_one,BigFish.safe_y_two)
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-
-
-class Button(Sprite):
-    def __init__(self,pos, images):
-        self.images = []
-        for item in images:
-            self.images.append(pygame.image.load(item))
-        self.image = self.images[0]
-        self.x = pos[0]
-        self.y = pos[1]
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-    
-    def setImage(self,index):
-        self.image = self.images[index]
 
 background = pygame.image.load("assets/images/city.png")
 start = Button([220,275],["assets/images/newstart.png","assets/images/newstarthover.png"])
@@ -135,13 +57,11 @@ while play:
             raise SystemExit
         
     tick = pygame.time.get_ticks()
-    
 
-    mouse = [pygame.mouse.get_pos(),pygame.mouse.get_pressed()]
-    if(not(lastClick == True and mouse[1][0])):
+    mousePos = pygame.mouse.get_pos()
+    mouseClick = pygame.mouse.get_pressed()
+    if(not(lastClick == True and mouseClick[0])):
         lastClick = False
-        
-
 
     if(not(game) and (not(gameover)) and not(lastClick)):
         #start button
@@ -155,19 +75,19 @@ while play:
         #quit button
         if(quitButton.checkHover(mousePos)):
             quitButton.setImage(1)
-            if(quitButton.checkHoverClick(mousePos)):
+            if(quitButton.checkHoverClick(mousePos,mouseClick)):
                 play = False
         else:
             quitButton.setImage(0)
 
-        if(fullscreenSprite.check_hover(mousePos)):
+        if(fullscreenSprite.checkHover(mousePos)):
             fullscreenSprite.setImage(1)
             if(fullscreenSprite.checkHoverClick(mousePos,mouseClick)):
                 pygame.display.toggle_fullscreen()
         else:
             fullscreenSprite.setImage(0)
         #competitive mode button
-        if(competitiveSprite.checkHoverClick):
+        if(competitiveSprite.checkHoverClick(mousePos,mouseClick)):
             if(comp == False):
                 competitiveSprite.setImage(1)
                 comp = True
@@ -186,7 +106,7 @@ while play:
         if(len(fishes) < 11):
             if(lastClick == False):
                 for i in range(len(fishes) - 1 , -1, -1):
-                    if(check_collision_click(mouse[0],mouse[1],fishes[i].getFullPos())):
+                    if(fishes[i].checkHoverClick(mousePos,mouseClick)):
                         fishes.pop(i)
                         time -= 1
                         score += 1
@@ -200,7 +120,7 @@ while play:
             gameover = True
     if(game == True and comp == True):
         screen.blit(fishes[0].getImage(),fishes[0].getPos())
-        if(check_collision_click(mouse[0],mouse[1],fishes[0].getFullPos())):
+        if(fishes[0].checkHoverClick(mousePos,mouseClick)):
             fishes.pop(0)
         screen.blit(scoreImage.getImage(), scoreImage.getPos())
         screen.blit(font.render(str((tick - compTimeStart)/1000),False, (174,0,0)), [240,18])
@@ -217,9 +137,9 @@ while play:
             screen.blit(font.render(("Score: " + str(score)),False, (0,43,162)), [20,18])
         else:
             screen.blit(font.render(("Time in Seconds: " + str((compTimeEnd - compTimeStart)/1000)),False, (174,0,0)), [20,18])
-        if(check_collision(mouse[0],back.getFullPos())):
+        if(back.checkHover(mousePos)):
             back.setImage(1)
-            if(check_collision_click(mouse[0],mouse[1],back.getFullPos())):
+            if(back.checkHoverClick(mousePos,mouseClick) and not(lastClick)):
                 gameover = False
         else:
             back.setImage(0)
@@ -244,7 +164,7 @@ while play:
         screen.blit(fullscreenSprite.getImage(), fullscreenSprite.getPos())
         screen.blit(competitiveSprite.getImage(), competitiveSprite.getPos())
     
-    if(mouse[1][0] == 1):
+    if(mouseClick[0] == 1):
         lastClick = True
     
     pygame.display.flip()  # Refresh on-screen display
