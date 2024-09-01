@@ -1,9 +1,19 @@
 import pygame
 import random
 from Sprite import Sprite
-from SmallFish import SmallFish
-from BigFish import BigFish
+from Fish import *
 from Button import Button
+
+
+"""
+Ideas for improvement
+1. Make sections of games into classes to organize the mess
+2. something else
+
+"""
+
+
+
 
 pygame.init()
 
@@ -168,4 +178,6 @@ while play:
         lastClick = True
     
     pygame.display.flip()  # Refresh on-screen display
-    clock.tick(360)         # wait until next frame (at 60 FPS)
+    clock.tick(360)         # wait until next frame (at 360 FPS)
+    #At some point we will modify the tick rate to be as fast as the computer can handle to minimize
+    #input latency. For now, it will run at 360 FPS but any computer should handle it

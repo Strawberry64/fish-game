@@ -30,6 +30,13 @@ class Sprite:
         return [self.x,self.y,self.x + self.width,self.y + self.height]
     def getEndPos(self):
         return [self.x + self.width, self.y + self.height]
+
+    def safeAreaXCalc(width):
+        return 640 - width
+
+    def safeAreaYCalc(height):
+        return 480 - height
+
     
     def checkHover(self,mousePos):
         if mousePos[0] > self.getX() and mousePos[0] < self.getEndX():
