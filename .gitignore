@@ -1,6 +1,5 @@
 __pycache__/
 build/
 dist/
-designs/
 cameratest.py
 main.spec
