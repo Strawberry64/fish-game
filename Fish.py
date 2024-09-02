@@ -44,3 +44,12 @@ class SmallFish(Sprite):
         self.y = randint(SmallFish.safe_y_one,SmallFish.safe_y_two)
         self.width = self.image.get_width()
         self.height = self.image.get_height()
+
+
+#LEAVE THIS ALONE UNLESS YOU KNOW WHAT YOU DOING
+def fishGenerator():
+    x = randint(0,10)
+    if(x < 2):
+        return BigFish()
+    elif(x >= 2):
+        return SmallFish()

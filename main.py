@@ -112,7 +112,7 @@ while play:
         if tick - init_tick > time:
             randomFishNumber = random.randint(0,100)
             init_tick = tick
-            fishes.append(SmallFish())
+            fishes.append(fishGenerator())
         if(len(fishes) < 11):
             if(lastClick == False):
                 for i in range(len(fishes) - 1 , -1, -1):
